@@ -1,5 +1,6 @@
 #include <SFML/Graphics.hpp>
 #include <iostream>
+#include <cmath>
 
 int main() {
     // Create window
@@ -8,19 +9,36 @@ int main() {
 
     std::cout << "Fourier Visualizer - Window created!" << std::endl;
 
-    // Create a simple circle in the center
-    sf::CircleShape circle(50.f);  // radius of 50
+    // Create a simple circle
+    sf::CircleShape circle(20.f);  // radius of 20
     circle.setFillColor(sf::Color::White);
-    circle.setPosition({640.f - 50.f, 360.f - 50.f});  // center at (640, 360)
+    circle.setOrigin({20.f, 20.f});  // set origin to center of circle
+
+    // Animation variables
+    sf::Clock clock;
+    float time = 0.f;
+    float centerX = 640.f;
+    float centerY = 360.f;
+    float orbitRadius = 150.f;
 
     // Main loop
     while (window.isOpen()) {
+        // Delta time
+        float deltaTime = clock.restart().asSeconds();
+        time += deltaTime;
+
         // Handle events
         while (const std::optional event = window.pollEvent()) {
             if (event->is<sf::Event::Closed>()) {
                 window.close();
             }
         }
+
+        // Update circle position (rotate around center)
+        float angle = time;
+        float x = centerX + orbitRadius * std::cos(angle);
+        float y = centerY + orbitRadius * std::sin(angle);
+        circle.setPosition({x, y});
 
         // Clear with black background
         window.clear(sf::Color::Black);
