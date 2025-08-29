@@ -89,6 +89,27 @@ int main() {
             }
         }
 
+        // Draw connecting lines between epicycles
+        Point2D lineStart = screenCenter;
+        for (size_t i = 0; i < epicycles.size(); i++) {
+            float angle = time * epicycles[i].frequency;
+            Point2D offset(
+                epicycles[i].radius * std::cos(angle),
+                epicycles[i].radius * std::sin(angle)
+            );
+            Point2D lineEnd(lineStart.x + offset.x, lineStart.y + offset.y);
+
+            // Draw connecting arm
+            sf::Vertex line[2];
+            line[0].position = lineStart.toSFML();
+            line[0].color = epicycles[i].color;
+            line[1].position = lineEnd.toSFML();
+            line[1].color = epicycles[i].color;
+            window.draw(line, 2, sf::PrimitiveType::Lines);
+
+            lineStart = lineEnd;
+        }
+
         // Draw all epicycles
         for (const auto& epic : epicycles) {
             // Draw the circle
