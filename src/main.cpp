@@ -50,11 +50,12 @@ int main() {
 
     // Create multiple epicycles (hardcoded for now)
     std::vector<Epicycle> epicycles;
-    int numEpicycles = 5;
+    int numEpicycles = 7;
 
     // Define epicycles with auto-generated gradient colors
-    float radii[] = {100.f, 60.f, 40.f, 25.f, 15.f};
-    float frequencies[] = {1.0f, 2.5f, -1.5f, 3.0f, -2.0f};
+    // Tuned for nice visual balance
+    float radii[] = {120.f, 70.f, 50.f, 35.f, 22.f, 15.f, 10.f};
+    float frequencies[] = {1.0f, -2.0f, 3.0f, -1.5f, 4.0f, 2.5f, -3.5f};
 
     for (int i = 0; i < numEpicycles; i++) {
         sf::Color color = getColorForIndex(i, numEpicycles);
