@@ -15,6 +15,7 @@ include_directories(include)
 set(SOURCES
     src/main.cpp
     src/FourierEngine.cpp
+    src/PathData.cpp
 )
 
 # Create executable
