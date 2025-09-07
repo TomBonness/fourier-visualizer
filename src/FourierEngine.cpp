@@ -1,7 +1,15 @@
 #include "FourierEngine.h"
 #include <cmath>
+#include <algorithm>
 
 const double TWO_PI = 2.0 * M_PI;
+
+// Structure to store coefficient with its frequency index
+struct CoeffData {
+    std::complex<double> coeff;
+    int frequency;
+    double magnitude;
+};
 
 FourierEngine::FourierEngine() : numEpicycles(0), time(0.0) {
 }
@@ -13,8 +21,10 @@ void FourierEngine::computeDFT(const std::vector<Point2D>& path) {
     if (N == 0) return;
 
     coefficients.clear();
+    frequencies.clear();
 
     // Compute DFT coefficients for frequencies from -N/2 to N/2
+    std::vector<CoeffData> coeffData;
     for (int k = -N/2; k < N/2; k++) {
         std::complex<double> sum(0.0, 0.0);
 
@@ -30,20 +40,32 @@ void FourierEngine::computeDFT(const std::vector<Point2D>& path) {
             sum += point * exponential;
         }
 
-        // Average and store coefficient
-        coefficients.push_back(sum / static_cast<double>(N));
+        // Average and store coefficient with frequency
+        std::complex<double> coeff = sum / static_cast<double>(N);
+        coeffData.push_back({coeff, k, std::abs(coeff)});
+    }
+
+    // Sort by magnitude (largest first)
+    std::sort(coeffData.begin(), coeffData.end(),
+        [](const CoeffData& a, const CoeffData& b) {
+            return a.magnitude > b.magnitude;
+        });
+
+    // Store sorted coefficients and frequencies
+    for (const auto& data : coeffData) {
+        coefficients.push_back(data.coeff);
+        frequencies.push_back(data.frequency);
     }
 }
 
 std::vector<Epicycle> FourierEngine::getEpicycles(double t) const {
     std::vector<Epicycle> epicycles;
 
-    int N = originalPath.size();
-    if (N == 0 || coefficients.empty()) return epicycles;
+    if (coefficients.empty()) return epicycles;
 
-    // Calculate epicycles for each frequency
+    // Calculate epicycles for each frequency (already sorted by magnitude)
     for (int i = 0; i < static_cast<int>(coefficients.size()); i++) {
-        int k = i - N/2;  // Frequency index
+        int k = frequencies[i];  // Get stored frequency
 
         // Get the coefficient for this frequency
         std::complex<double> coeff = coefficients[i];
@@ -71,11 +93,10 @@ Point2D FourierEngine::getTracedPoint(double t) const {
     // The traced point is the sum of all rotated coefficients
     std::complex<double> sum(0.0, 0.0);
 
-    int N = originalPath.size();
-    if (N == 0 || coefficients.empty()) return Point2D(0.0, 0.0);
+    if (coefficients.empty()) return Point2D(0.0, 0.0);
 
     for (int i = 0; i < static_cast<int>(coefficients.size()); i++) {
-        int k = i - N/2;
+        int k = frequencies[i];  // Get stored frequency
         double angle = TWO_PI * k * t;
         std::complex<double> rotation(std::cos(angle), std::sin(angle));
         sum += coefficients[i] * rotation;
