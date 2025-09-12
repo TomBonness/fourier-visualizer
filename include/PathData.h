@@ -15,6 +15,9 @@ public:
     // Generate a star path
     static std::vector<Point2D> createStar(int numPoints, int spikes = 5, float scale = 100.f);
 
+    // Generate a square path
+    static std::vector<Point2D> createSquare(int numPoints, float size = 100.f);
+
     // Utility: resample path to have a specific number of points
     static std::vector<Point2D> resamplePath(const std::vector<Point2D>& path, int targetPoints);
 

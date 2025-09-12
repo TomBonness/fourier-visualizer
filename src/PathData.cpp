@@ -36,6 +36,48 @@ std::vector<Point2D> PathData::createStar(int numPoints, int spikes, float scale
     return createCircle(numPoints, scale);
 }
 
+std::vector<Point2D> PathData::createSquare(int numPoints, float size) {
+    std::vector<Point2D> points;
+    float halfSize = size / 2.0f;
+
+    // Distribute points evenly around the square perimeter
+    int pointsPerSide = numPoints / 4;
+
+    // Top side (left to right)
+    for (int i = 0; i < pointsPerSide; i++) {
+        float t = static_cast<float>(i) / pointsPerSide;
+        float x = -halfSize + t * size;
+        float y = -halfSize;
+        points.push_back(Point2D(x, y));
+    }
+
+    // Right side (top to bottom)
+    for (int i = 0; i < pointsPerSide; i++) {
+        float t = static_cast<float>(i) / pointsPerSide;
+        float x = halfSize;
+        float y = -halfSize + t * size;
+        points.push_back(Point2D(x, y));
+    }
+
+    // Bottom side (right to left)
+    for (int i = 0; i < pointsPerSide; i++) {
+        float t = static_cast<float>(i) / pointsPerSide;
+        float x = halfSize - t * size;
+        float y = halfSize;
+        points.push_back(Point2D(x, y));
+    }
+
+    // Left side (bottom to top)
+    for (int i = 0; i < pointsPerSide; i++) {
+        float t = static_cast<float>(i) / pointsPerSide;
+        float x = -halfSize;
+        float y = halfSize - t * size;
+        points.push_back(Point2D(x, y));
+    }
+
+    return points;
+}
+
 std::vector<Point2D> PathData::resamplePath(const std::vector<Point2D>& path, int targetPoints) {
     // TODO: Implement resampling
     return path;
