@@ -116,9 +116,29 @@ int main() {
         // Get epicycles from Fourier Engine
         std::vector<Epicycle> epicycles = fourierEngine.getEpicycles(time);
 
-        // Assign colors to epicycles
+        // Assign colors to epicycles - spread across visible ones
         for (size_t i = 0; i < epicycles.size(); i++) {
-            epicycles[i].color = getColorForIndex(i, epicycles.size());
+            // Use a better distribution that spreads colors across visible epicycles
+            float t = static_cast<float>(i) / std::min(static_cast<int>(epicycles.size()), 5);
+            t = std::min(t, 1.0f);  // Clamp to 1.0
+
+            // Apply gradient: Pink -> Cyan -> Purple
+            sf::Color color;
+            if (t < 0.5f) {
+                color = lerpColor(
+                    sf::Color(255, 110, 199),  // Neon Pink
+                    sf::Color(0, 240, 255),    // Cyan
+                    t * 2.0f
+                );
+            } else {
+                color = lerpColor(
+                    sf::Color(0, 240, 255),    // Cyan
+                    sf::Color(185, 103, 255),  // Purple
+                    (t - 0.5f) * 2.0f
+                );
+            }
+
+            epicycles[i].color = color;
         }
 
         // Position epicycles relative to screen center and chain them together
@@ -154,7 +174,8 @@ int main() {
                 // Quadratic fade for smoother effect
                 float t = static_cast<float>(i) / trail.size();
                 float fade = t * t;  // Quadratic easing
-                int alpha = static_cast<int>(fade * 255);
+                int alpha = static_cast<int>(fade * 255 * 1.6f);  // Bolder trail
+                alpha = std::min(alpha, 255);
 
                 // Color gradient along trail: Pink -> Cyan -> Purple
                 sf::Color color;
@@ -194,12 +215,16 @@ int main() {
             );
             Point2D lineEnd(lineStart.x + offset.x, lineStart.y + offset.y);
 
+            // Make connecting lines subtle
+            sf::Color subtleColor = epicycles[i].color;
+            subtleColor.a = 150;  // Add transparency
+
             // Draw connecting arm
             sf::Vertex line[2];
             line[0].position = lineStart.toSFML();
-            line[0].color = epicycles[i].color;
+            line[0].color = subtleColor;
             line[1].position = lineEnd.toSFML();
-            line[1].color = epicycles[i].color;
+            line[1].color = subtleColor;
             window.draw(line, 2, sf::PrimitiveType::Lines);
 
             lineStart = lineEnd;
@@ -207,20 +232,24 @@ int main() {
 
         // Draw all epicycles
         for (const auto& epic : epicycles) {
+            // Make epicycles more subtle with transparency
+            sf::Color subtleColor = epic.color;
+            subtleColor.a = 150;  // Add transparency
+
             // Draw the circle
             sf::CircleShape circle(epic.radius);
             circle.setOrigin({epic.radius, epic.radius});
             circle.setPosition(epic.center.toSFML());
             circle.setFillColor(sf::Color::Transparent);
-            circle.setOutlineThickness(2.0f);
-            circle.setOutlineColor(epic.color);
+            circle.setOutlineThickness(1.5f);  // Subtle outline
+            circle.setOutlineColor(subtleColor);
             window.draw(circle);
 
-            // Draw center dot
-            sf::CircleShape dot(3.f);
-            dot.setOrigin({3.f, 3.f});
+            // Draw center dot (also subtle)
+            sf::CircleShape dot(2.f);  // Slightly smaller
+            dot.setOrigin({2.f, 2.f});
             dot.setPosition(epic.center.toSFML());
-            dot.setFillColor(epic.color);
+            dot.setFillColor(subtleColor);
             window.draw(dot);
         }
 
