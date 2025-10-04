@@ -13,6 +13,7 @@ public:
     void drawTrail(sf::RenderWindow& window, const std::vector<Point2D>& trail);
     void drawEpicycles(sf::RenderWindow& window, const std::vector<Epicycle>& epicycles);
     void drawGlow(sf::RenderWindow& window, const Point2D& position);
+    void drawUserPath(sf::RenderWindow& window, const std::vector<Point2D>& path);
 
 private:
     // Helper function for color interpolation

@@ -156,6 +156,11 @@ int main() {
         // Draw trail
         renderer.drawTrail(window, trail);
 
+        // Draw user's drawn path if they're drawing
+        if (inputHandler.isDrawing() && inputHandler.getDrawnPath().size() > 0) {
+            renderer.drawUserPath(window, inputHandler.getDrawnPath());
+        }
+
         // Draw connecting lines between epicycles
         Point2D lineStart = screenCenter;
         for (size_t i = 0; i < epicycles.size(); i++) {

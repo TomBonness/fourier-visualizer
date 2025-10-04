@@ -95,3 +95,26 @@ void Renderer::drawGlow(sf::RenderWindow& window, const Point2D& position) {
     centerPoint.setFillColor(sf::Color(255, 255, 255));
     window.draw(centerPoint, sf::BlendAdd);
 }
+
+void Renderer::drawUserPath(sf::RenderWindow& window, const std::vector<Point2D>& path) {
+    if (path.size() < 2) return;
+
+    // Draw the path the user is drawing in white
+    for (size_t i = 1; i < path.size(); i++) {
+        sf::Vertex line[2];
+        line[0].position = path[i - 1].toSFML();
+        line[0].color = sf::Color(255, 255, 255, 200);  // Bright white, slightly transparent
+        line[1].position = path[i].toSFML();
+        line[1].color = sf::Color(255, 255, 255, 200);
+        window.draw(line, 2, sf::PrimitiveType::Lines);
+    }
+
+    // Draw dots at each point
+    for (const auto& point : path) {
+        sf::CircleShape dot(2.f);
+        dot.setOrigin({2.f, 2.f});
+        dot.setPosition(point.toSFML());
+        dot.setFillColor(sf::Color(255, 255, 255));
+        window.draw(dot);
+    }
+}
