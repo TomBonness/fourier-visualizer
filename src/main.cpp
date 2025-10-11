@@ -48,12 +48,17 @@ int main() {
     // Track drawing state
     bool wasDrawing = false;
 
+    // Animation state
+    bool paused = false;
+
     // Main loop
     while (window.isOpen()) {
         // Delta time with cap to prevent huge jumps
         float deltaTime = clock.restart().asSeconds();
         if (deltaTime > 0.033f) deltaTime = 0.033f;  // cap at ~30 FPS worth
-        time += deltaTime * 0.3f;  // Slow down animation to 30% speed
+        if (!paused) {
+            time += deltaTime * 0.3f;  // Slow down animation to 30% speed
+        }
 
         // Handle events
         while (const std::optional event = window.pollEvent()) {
@@ -91,6 +96,22 @@ int main() {
                     path = PathData::createHeart(200, 10.f);
                     shapeChanged = true;
                     std::cout << "Shape: Heart" << std::endl;
+                }
+                else if (keyPressed->code == sf::Keyboard::Key::C) {
+                    // Clear drawing
+                    inputHandler.clearPath();
+                    std::cout << "Cleared drawing" << std::endl;
+                }
+                else if (keyPressed->code == sf::Keyboard::Key::R) {
+                    // Reset animation
+                    trail.clear();
+                    time = 0.f;
+                    std::cout << "Reset animation" << std::endl;
+                }
+                else if (keyPressed->code == sf::Keyboard::Key::Space) {
+                    // Toggle pause
+                    paused = !paused;
+                    std::cout << (paused ? "Paused" : "Playing") << std::endl;
                 }
 
                 if (shapeChanged) {
