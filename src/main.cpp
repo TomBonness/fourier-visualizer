@@ -60,6 +60,10 @@ int main() {
     float speed = 0.3f;  // Animation speed multiplier
     int numEpicyclesToShow = 100;  // Number of epicycles to display
 
+    // Visibility toggles
+    bool showEpicycles = true;
+    bool showTrail = true;
+
     // Main loop
     while (window.isOpen()) {
         // Delta time with cap to prevent huge jumps
@@ -148,6 +152,16 @@ int main() {
                     }
                     std::cout << "Epicycles: " << numEpicyclesToShow << std::endl;
                 }
+                else if (keyPressed->code == sf::Keyboard::Key::E) {
+                    // Toggle epicycles visibility
+                    showEpicycles = !showEpicycles;
+                    std::cout << "Epicycles: " << (showEpicycles ? "Visible" : "Hidden") << std::endl;
+                }
+                else if (keyPressed->code == sf::Keyboard::Key::T) {
+                    // Toggle trail visibility
+                    showTrail = !showTrail;
+                    std::cout << "Trail: " << (showTrail ? "Visible" : "Hidden") << std::endl;
+                }
 
                 if (shapeChanged) {
                     fourierEngine.computeDFT(path);
@@ -235,42 +249,47 @@ int main() {
         // Clear with deep black background (vaporwave aesthetic)
         window.clear(sf::Color(10, 10, 10));  // #0a0a0a
 
-        // Draw trail
-        renderer.drawTrail(window, trail);
+        // Draw trail (if visible)
+        if (showTrail) {
+            renderer.drawTrail(window, trail);
+        }
 
         // Draw user's drawn path if they're drawing
         if (inputHandler.isDrawing() && inputHandler.getDrawnPath().size() > 0) {
             renderer.drawUserPath(window, inputHandler.getDrawnPath());
         }
 
-        // Draw connecting lines between epicycles
-        Point2D lineStart = screenCenter;
-        for (size_t i = 0; i < epicycles.size(); i++) {
-            // Use same angle calculation as epicycle positioning
-            float angle = 2.0f * M_PI * epicycles[i].frequency * time;
-            Point2D offset(
-                epicycles[i].radius * std::cos(angle),
-                epicycles[i].radius * std::sin(angle)
-            );
-            Point2D lineEnd(lineStart.x + offset.x, lineStart.y + offset.y);
+        // Draw epicycles (if visible)
+        if (showEpicycles) {
+            // Draw connecting lines between epicycles
+            Point2D lineStart = screenCenter;
+            for (size_t i = 0; i < epicycles.size(); i++) {
+                // Use same angle calculation as epicycle positioning
+                float angle = 2.0f * M_PI * epicycles[i].frequency * time;
+                Point2D offset(
+                    epicycles[i].radius * std::cos(angle),
+                    epicycles[i].radius * std::sin(angle)
+                );
+                Point2D lineEnd(lineStart.x + offset.x, lineStart.y + offset.y);
 
-            // Make connecting lines subtle
-            sf::Color subtleColor = epicycles[i].color;
-            subtleColor.a = 150;  // Add transparency
+                // Make connecting lines subtle
+                sf::Color subtleColor = epicycles[i].color;
+                subtleColor.a = 150;  // Add transparency
 
-            // Draw connecting arm
-            sf::Vertex line[2];
-            line[0].position = lineStart.toSFML();
-            line[0].color = subtleColor;
-            line[1].position = lineEnd.toSFML();
-            line[1].color = subtleColor;
-            window.draw(line, 2, sf::PrimitiveType::Lines);
+                // Draw connecting arm
+                sf::Vertex line[2];
+                line[0].position = lineStart.toSFML();
+                line[0].color = subtleColor;
+                line[1].position = lineEnd.toSFML();
+                line[1].color = subtleColor;
+                window.draw(line, 2, sf::PrimitiveType::Lines);
 
-            lineStart = lineEnd;
+                lineStart = lineEnd;
+            }
+
+            // Draw epicycles
+            renderer.drawEpicycles(window, epicycles);
         }
-
-        // Draw epicycles
-        renderer.drawEpicycles(window, epicycles);
 
         // Draw glow at the drawing point
         if (!epicycles.empty()) {
