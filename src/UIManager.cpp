@@ -14,6 +14,15 @@ bool UIManager::loadFont(const std::string& fontPath) {
     return false;
 }
 
+void UIManager::drawPanel(sf::RenderWindow& window, float x, float y, float width, float height) {
+    sf::RectangleShape panel({width, height});
+    panel.setPosition({x, y});
+    panel.setFillColor(sf::Color(20, 20, 40, 180));  // Dark blue-ish, semi-transparent
+    panel.setOutlineThickness(1.f);
+    panel.setOutlineColor(sf::Color(100, 100, 150, 100));  // Subtle border
+    window.draw(panel);
+}
+
 void UIManager::drawText(sf::RenderWindow& window, const std::string& text, float x, float y, unsigned int size) {
     if (!fontLoaded) return;
 

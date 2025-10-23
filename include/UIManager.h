@@ -11,6 +11,9 @@ public:
     // Load font (must be called before rendering)
     bool loadFont(const std::string& fontPath);
 
+    // Draw a semi-transparent panel
+    void drawPanel(sf::RenderWindow& window, float x, float y, float width, float height);
+
     // Draw text at a position
     void drawText(sf::RenderWindow& window, const std::string& text, float x, float y, unsigned int size = 14);
 
