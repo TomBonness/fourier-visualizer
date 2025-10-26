@@ -18,6 +18,9 @@ public:
     // Generate a square path
     static std::vector<Point2D> createSquare(int numPoints, float size = 100.f);
 
+    // Generate an infinity symbol path
+    static std::vector<Point2D> createInfinity(int numPoints, float scale = 100.f);
+
     // Utility: resample path to have a specific number of points
     static std::vector<Point2D> resamplePath(const std::vector<Point2D>& path, int targetPoints);
 

@@ -110,6 +110,12 @@ int main() {
                     shapeChanged = true;
                     std::cout << "Shape: Heart" << std::endl;
                 }
+                else if (keyPressed->code == sf::Keyboard::Key::Num5) {
+                    // Infinity
+                    path = PathData::createInfinity(200, 120.f);
+                    shapeChanged = true;
+                    std::cout << "Shape: Infinity" << std::endl;
+                }
                 else if (keyPressed->code == sf::Keyboard::Key::C) {
                     // Clear drawing and reset to circle
                     inputHandler.clearPath();
@@ -314,8 +320,8 @@ int main() {
         uiManager.drawText(window, trailText, 260, 50);
 
         // Bottom panel for help text
-        uiManager.drawPanel(window, 5, 682, 1150, 30);
-        uiManager.drawText(window, "1-4: Shapes  |  Draw: Click & Drag  |  +/- Speed  |  [/] Epicycles  |  E: Toggle Epicycles  |  T: Toggle Trail  |  Space: Pause  |  C: Clear  |  R: Reset", 10, 690);
+        uiManager.drawPanel(window, 5, 682, 1270, 30);
+        uiManager.drawText(window, "1-5: Shapes  |  Draw: Click & Drag  |  +/- Speed  |  [/] Epicycles  |  E: Toggle Epicycles  |  T: Toggle Trail  |  Space: Pause  |  C: Clear  |  R: Reset", 10, 690);
 
         // Display
         window.display();
