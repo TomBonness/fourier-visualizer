@@ -6,6 +6,7 @@ int main() {
     // Create window
     sf::RenderWindow window(sf::VideoMode({1280, 720}), "Fourier Series Visualizer");
     window.setFramerateLimit(60);
+    window.setVerticalSyncEnabled(true);
 
     std::cout << "Fourier Visualizer - Window created!" << std::endl;
 
@@ -29,8 +30,9 @@ int main() {
 
     // Main loop
     while (window.isOpen()) {
-        // Delta time
+        // Delta time with cap to prevent huge jumps
         float deltaTime = clock.restart().asSeconds();
+        if (deltaTime > 0.033f) deltaTime = 0.033f;  // cap at ~30 FPS worth
         time += deltaTime;
 
         // Handle events
