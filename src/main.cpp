@@ -31,6 +31,7 @@ int main() {
 
     // Trail for the path
     std::vector<Point2D> trail;
+    const int maxTrailLength = 300;
 
     // Main loop
     while (window.isOpen()) {
@@ -65,17 +66,26 @@ int main() {
         // Add current position to trail
         trail.push_back(pos2);
 
+        // Limit trail length
+        if (trail.size() > maxTrailLength) {
+            trail.erase(trail.begin());
+        }
+
         // Clear with black background
         window.clear(sf::Color::Black);
 
-        // Draw trail
+        // Draw trail with fade effect
         if (trail.size() > 1) {
             for (size_t i = 1; i < trail.size(); i++) {
+                // Linear fade - older points are more transparent
+                float fade = static_cast<float>(i) / trail.size();
+                int alpha = static_cast<int>(fade * 255);
+
                 sf::Vertex line[2];
                 line[0].position = trail[i - 1].toSFML();
-                line[0].color = sf::Color::White;
+                line[0].color = sf::Color(255, 255, 255, alpha);
                 line[1].position = trail[i].toSFML();
-                line[1].color = sf::Color::White;
+                line[1].color = sf::Color(255, 255, 255, alpha);
                 window.draw(line, 2, sf::PrimitiveType::Lines);
             }
         }
