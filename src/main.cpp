@@ -1,6 +1,7 @@
 #include <SFML/Graphics.hpp>
 #include <iostream>
 #include <cmath>
+#include "Types.h"
 
 int main() {
     // Create window
@@ -23,8 +24,7 @@ int main() {
     // Animation variables
     sf::Clock clock;
     float time = 0.f;
-    float centerX = 640.f;
-    float centerY = 360.f;
+    Point2D center(640.f, 360.f);
     float orbitRadius1 = 150.f;
     float orbitRadius2 = 80.f;
 
@@ -44,15 +44,19 @@ int main() {
 
         // Update first circle position (rotate around center)
         float angle1 = time;
-        float x1 = centerX + orbitRadius1 * std::cos(angle1);
-        float y1 = centerY + orbitRadius1 * std::sin(angle1);
-        circle1.setPosition({x1, y1});
+        Point2D pos1(
+            center.x + orbitRadius1 * std::cos(angle1),
+            center.y + orbitRadius1 * std::sin(angle1)
+        );
+        circle1.setPosition(pos1.toSFML());
 
         // Update second circle position (rotate around first circle)
         float angle2 = time * 2.5f;  // faster rotation
-        float x2 = x1 + orbitRadius2 * std::cos(angle2);
-        float y2 = y1 + orbitRadius2 * std::sin(angle2);
-        circle2.setPosition({x2, y2});
+        Point2D pos2(
+            pos1.x + orbitRadius2 * std::cos(angle2),
+            pos1.y + orbitRadius2 * std::sin(angle2)
+        );
+        circle2.setPosition(pos2.toSFML());
 
         // Clear with black background
         window.clear(sf::Color::Black);
