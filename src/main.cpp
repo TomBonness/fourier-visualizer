@@ -4,6 +4,37 @@
 #include <vector>
 #include "Types.h"
 
+// Simple color interpolation function
+sf::Color lerpColor(sf::Color a, sf::Color b, float t) {
+    return sf::Color(
+        static_cast<uint8_t>(a.r + (b.r - a.r) * t),
+        static_cast<uint8_t>(a.g + (b.g - a.g) * t),
+        static_cast<uint8_t>(a.b + (b.b - a.b) * t)
+    );
+}
+
+// Get color for epicycle based on index
+sf::Color getColorForIndex(int index, int total) {
+    float t = static_cast<float>(index) / (total - 1);
+
+    // Vaporwave color gradient: Pink -> Cyan -> Purple
+    if (t < 0.5f) {
+        // Pink to Cyan
+        return lerpColor(
+            sf::Color(255, 110, 199),  // Neon Pink
+            sf::Color(0, 240, 255),    // Cyan
+            t * 2.0f
+        );
+    } else {
+        // Cyan to Purple
+        return lerpColor(
+            sf::Color(0, 240, 255),    // Cyan
+            sf::Color(185, 103, 255),  // Purple
+            (t - 0.5f) * 2.0f
+        );
+    }
+}
+
 int main() {
     // Create window
     sf::RenderWindow window(sf::VideoMode({1280, 720}), "Fourier Series Visualizer");
@@ -19,11 +50,16 @@ int main() {
 
     // Create multiple epicycles (hardcoded for now)
     std::vector<Epicycle> epicycles;
-    epicycles.push_back(Epicycle(100.f, 1.0f, sf::Color(255, 110, 199)));   // Pink, slow
-    epicycles.push_back(Epicycle(60.f, 2.5f, sf::Color(0, 240, 255)));      // Cyan, medium
-    epicycles.push_back(Epicycle(40.f, -1.5f, sf::Color(185, 103, 255)));   // Purple, reverse
-    epicycles.push_back(Epicycle(25.f, 3.0f, sf::Color(255, 16, 240)));     // Hot pink, fast
-    epicycles.push_back(Epicycle(15.f, -2.0f, sf::Color(5, 217, 232)));     // Electric blue
+    int numEpicycles = 5;
+
+    // Define epicycles with auto-generated gradient colors
+    float radii[] = {100.f, 60.f, 40.f, 25.f, 15.f};
+    float frequencies[] = {1.0f, 2.5f, -1.5f, 3.0f, -2.0f};
+
+    for (int i = 0; i < numEpicycles; i++) {
+        sf::Color color = getColorForIndex(i, numEpicycles);
+        epicycles.push_back(Epicycle(radii[i], frequencies[i], color));
+    }
 
     // Trail for the path
     std::vector<Point2D> trail;
