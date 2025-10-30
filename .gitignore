@@ -1,0 +1,15 @@
+# Documentation
+requirements.md
+design.md
+visual-style-guide.md
+notes.md
+
+# Build
+build/
+cmake-build-*/
+
+# macOS
+.DS_Store
+
+# IDE
+.vscode/
