@@ -1,6 +1,7 @@
 #include <SFML/Graphics.hpp>
 #include <iostream>
 #include <cmath>
+#include <vector>
 #include "Types.h"
 
 int main() {
@@ -27,6 +28,9 @@ int main() {
     Point2D center(640.f, 360.f);
     float orbitRadius1 = 150.f;
     float orbitRadius2 = 80.f;
+
+    // Trail for the path
+    std::vector<Point2D> trail;
 
     // Main loop
     while (window.isOpen()) {
@@ -58,8 +62,23 @@ int main() {
         );
         circle2.setPosition(pos2.toSFML());
 
+        // Add current position to trail
+        trail.push_back(pos2);
+
         // Clear with black background
         window.clear(sf::Color::Black);
+
+        // Draw trail
+        if (trail.size() > 1) {
+            for (size_t i = 1; i < trail.size(); i++) {
+                sf::Vertex line[2];
+                line[0].position = trail[i - 1].toSFML();
+                line[0].color = sf::Color::White;
+                line[1].position = trail[i].toSFML();
+                line[1].color = sf::Color::White;
+                window.draw(line, 2, sf::PrimitiveType::Lines);
+            }
+        }
 
         // Draw both circles
         window.draw(circle1);
