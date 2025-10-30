@@ -12,22 +12,18 @@ int main() {
 
     std::cout << "Fourier Visualizer - Window created!" << std::endl;
 
-    // Create first circle
-    sf::CircleShape circle1(20.f);
-    circle1.setFillColor(sf::Color(255, 110, 199));  // Neon Pink
-    circle1.setOrigin({20.f, 20.f});
-
-    // Create second circle
-    sf::CircleShape circle2(15.f);
-    circle2.setFillColor(sf::Color(0, 240, 255));  // Cyan
-    circle2.setOrigin({15.f, 15.f});
-
     // Animation variables
     sf::Clock clock;
     float time = 0.f;
-    Point2D center(640.f, 360.f);
-    float orbitRadius1 = 150.f;
-    float orbitRadius2 = 80.f;
+    Point2D screenCenter(640.f, 360.f);
+
+    // Create multiple epicycles (hardcoded for now)
+    std::vector<Epicycle> epicycles;
+    epicycles.push_back(Epicycle(100.f, 1.0f, sf::Color(255, 110, 199)));   // Pink, slow
+    epicycles.push_back(Epicycle(60.f, 2.5f, sf::Color(0, 240, 255)));      // Cyan, medium
+    epicycles.push_back(Epicycle(40.f, -1.5f, sf::Color(185, 103, 255)));   // Purple, reverse
+    epicycles.push_back(Epicycle(25.f, 3.0f, sf::Color(255, 16, 240)));     // Hot pink, fast
+    epicycles.push_back(Epicycle(15.f, -2.0f, sf::Color(5, 217, 232)));     // Electric blue
 
     // Trail for the path
     std::vector<Point2D> trail;
@@ -47,24 +43,27 @@ int main() {
             }
         }
 
-        // Update first circle position (rotate around center)
-        float angle1 = time;
-        Point2D pos1(
-            center.x + orbitRadius1 * std::cos(angle1),
-            center.y + orbitRadius1 * std::sin(angle1)
-        );
-        circle1.setPosition(pos1.toSFML());
+        // Update epicycle positions (each rotates around the previous one)
+        Point2D currentPos = screenCenter;
+        for (size_t i = 0; i < epicycles.size(); i++) {
+            float angle = time * epicycles[i].frequency;
 
-        // Update second circle position (rotate around first circle)
-        float angle2 = time * 2.5f;  // faster rotation
-        Point2D pos2(
-            pos1.x + orbitRadius2 * std::cos(angle2),
-            pos1.y + orbitRadius2 * std::sin(angle2)
-        );
-        circle2.setPosition(pos2.toSFML());
+            // Calculate position relative to current center
+            Point2D offset(
+                epicycles[i].radius * std::cos(angle),
+                epicycles[i].radius * std::sin(angle)
+            );
 
-        // Add current position to trail
-        trail.push_back(pos2);
+            // Update epicycle center
+            epicycles[i].center = currentPos;
+
+            // Next epicycle rotates around the tip of this one
+            currentPos.x += offset.x;
+            currentPos.y += offset.y;
+        }
+
+        // The final position is where we draw the trail
+        trail.push_back(currentPos);
 
         // Limit trail length
         if (trail.size() > maxTrailLength) {
@@ -90,9 +89,24 @@ int main() {
             }
         }
 
-        // Draw both circles
-        window.draw(circle1);
-        window.draw(circle2);
+        // Draw all epicycles
+        for (const auto& epic : epicycles) {
+            // Draw the circle
+            sf::CircleShape circle(epic.radius);
+            circle.setOrigin({epic.radius, epic.radius});
+            circle.setPosition(epic.center.toSFML());
+            circle.setFillColor(sf::Color::Transparent);
+            circle.setOutlineThickness(2.0f);
+            circle.setOutlineColor(epic.color);
+            window.draw(circle);
+
+            // Draw center dot
+            sf::CircleShape dot(3.f);
+            dot.setOrigin({3.f, 3.f});
+            dot.setPosition(epic.center.toSFML());
+            dot.setFillColor(epic.color);
+            window.draw(dot);
+        }
 
         // Display
         window.display();
