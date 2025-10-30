@@ -52,11 +52,11 @@ int main() {
 
     // Create Fourier Engine and compute DFT for a shape
     FourierEngine fourierEngine;
-    // Use circle for now - heart needs more work
-    std::vector<Point2D> path = PathData::createCircle(100, 120.f);
+    // Test with a square to verify Fourier math
+    std::vector<Point2D> path = PathData::createSquare(200, 250.f);
     fourierEngine.computeDFT(path);
 
-    std::cout << "DFT computed!" << std::endl;
+    std::cout << "DFT computed for square!" << std::endl;
 
     // Trail for the path
     std::vector<Point2D> trail;
