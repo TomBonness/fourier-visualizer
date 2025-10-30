@@ -50,12 +50,13 @@ int main() {
     float time = 0.f;
     Point2D screenCenter(640.f, 360.f);
 
-    // Create Fourier Engine and compute DFT for a circle
+    // Create Fourier Engine and compute DFT for a shape
     FourierEngine fourierEngine;
-    std::vector<Point2D> circlePath = PathData::createCircle(100, 150.f);
-    fourierEngine.computeDFT(circlePath);
+    // Use circle for now - heart needs more work
+    std::vector<Point2D> path = PathData::createCircle(100, 120.f);
+    fourierEngine.computeDFT(path);
 
-    std::cout << "DFT computed for circle path!" << std::endl;
+    std::cout << "DFT computed!" << std::endl;
 
     // Trail for the path
     std::vector<Point2D> trail;
@@ -66,7 +67,7 @@ int main() {
         // Delta time with cap to prevent huge jumps
         float deltaTime = clock.restart().asSeconds();
         if (deltaTime > 0.033f) deltaTime = 0.033f;  // cap at ~30 FPS worth
-        time += deltaTime;
+        time += deltaTime * 0.3f;  // Slow down animation to 30% speed
 
         // Handle events
         while (const std::optional event = window.pollEvent()) {
@@ -86,21 +87,21 @@ int main() {
         // Position epicycles relative to screen center and chain them together
         Point2D currentPos = screenCenter;
         for (size_t i = 0; i < epicycles.size(); i++) {
+            // Calculate rotation angle for this epicycle
             float angle = 2.0f * M_PI * epicycles[i].frequency * time;
             Point2D offset(
                 epicycles[i].radius * std::cos(angle),
                 epicycles[i].radius * std::sin(angle)
             );
 
+            // Set epicycle center and move to next position
             epicycles[i].center = currentPos;
             currentPos.x += offset.x;
             currentPos.y += offset.y;
         }
 
         // The final position is where we draw the trail
-        Point2D tracedPoint(screenCenter.x + fourierEngine.getTracedPoint(time).x,
-                            screenCenter.y + fourierEngine.getTracedPoint(time).y);
-        trail.push_back(tracedPoint);
+        trail.push_back(currentPos);
 
         // Limit trail length
         if (trail.size() > maxTrailLength) {
@@ -129,7 +130,8 @@ int main() {
         // Draw connecting lines between epicycles
         Point2D lineStart = screenCenter;
         for (size_t i = 0; i < epicycles.size(); i++) {
-            float angle = time * epicycles[i].frequency;
+            // Use same angle calculation as epicycle positioning
+            float angle = 2.0f * M_PI * epicycles[i].frequency * time;
             Point2D offset(
                 epicycles[i].radius * std::cos(angle),
                 epicycles[i].radius * std::sin(angle)
