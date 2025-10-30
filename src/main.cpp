@@ -11,12 +11,12 @@ int main() {
 
     // Create first circle
     sf::CircleShape circle1(20.f);
-    circle1.setFillColor(sf::Color::White);
+    circle1.setFillColor(sf::Color(255, 110, 199));  // Neon Pink
     circle1.setOrigin({20.f, 20.f});
 
     // Create second circle
     sf::CircleShape circle2(15.f);
-    circle2.setFillColor(sf::Color::White);
+    circle2.setFillColor(sf::Color(0, 240, 255));  // Cyan
     circle2.setOrigin({15.f, 15.f});
 
     // Animation variables
