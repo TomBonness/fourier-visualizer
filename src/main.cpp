@@ -3,6 +3,8 @@
 #include <cmath>
 #include <vector>
 #include "Types.h"
+#include "FourierEngine.h"
+#include "PathData.h"
 
 // Simple color interpolation function
 sf::Color lerpColor(sf::Color a, sf::Color b, float t) {
@@ -48,19 +50,12 @@ int main() {
     float time = 0.f;
     Point2D screenCenter(640.f, 360.f);
 
-    // Create multiple epicycles (hardcoded for now)
-    std::vector<Epicycle> epicycles;
-    int numEpicycles = 7;
+    // Create Fourier Engine and compute DFT for a circle
+    FourierEngine fourierEngine;
+    std::vector<Point2D> circlePath = PathData::createCircle(100, 150.f);
+    fourierEngine.computeDFT(circlePath);
 
-    // Define epicycles with auto-generated gradient colors
-    // Tuned for nice visual balance
-    float radii[] = {120.f, 70.f, 50.f, 35.f, 22.f, 15.f, 10.f};
-    float frequencies[] = {1.0f, -2.0f, 3.0f, -1.5f, 4.0f, 2.5f, -3.5f};
-
-    for (int i = 0; i < numEpicycles; i++) {
-        sf::Color color = getColorForIndex(i, numEpicycles);
-        epicycles.push_back(Epicycle(radii[i], frequencies[i], color));
-    }
+    std::cout << "DFT computed for circle path!" << std::endl;
 
     // Trail for the path
     std::vector<Point2D> trail;
@@ -80,27 +75,32 @@ int main() {
             }
         }
 
-        // Update epicycle positions (each rotates around the previous one)
+        // Get epicycles from Fourier Engine
+        std::vector<Epicycle> epicycles = fourierEngine.getEpicycles(time);
+
+        // Assign colors to epicycles
+        for (size_t i = 0; i < epicycles.size(); i++) {
+            epicycles[i].color = getColorForIndex(i, epicycles.size());
+        }
+
+        // Position epicycles relative to screen center and chain them together
         Point2D currentPos = screenCenter;
         for (size_t i = 0; i < epicycles.size(); i++) {
-            float angle = time * epicycles[i].frequency;
-
-            // Calculate position relative to current center
+            float angle = 2.0f * M_PI * epicycles[i].frequency * time;
             Point2D offset(
                 epicycles[i].radius * std::cos(angle),
                 epicycles[i].radius * std::sin(angle)
             );
 
-            // Update epicycle center
             epicycles[i].center = currentPos;
-
-            // Next epicycle rotates around the tip of this one
             currentPos.x += offset.x;
             currentPos.y += offset.y;
         }
 
         // The final position is where we draw the trail
-        trail.push_back(currentPos);
+        Point2D tracedPoint(screenCenter.x + fourierEngine.getTracedPoint(time).x,
+                            screenCenter.y + fourierEngine.getTracedPoint(time).y);
+        trail.push_back(tracedPoint);
 
         // Limit trail length
         if (trail.size() > maxTrailLength) {
