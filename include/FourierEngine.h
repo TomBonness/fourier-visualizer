@@ -8,6 +8,7 @@
 class FourierEngine {
 private:
     std::vector<std::complex<double>> coefficients;
+    std::vector<int> frequencies;  // Corresponding frequency for each coefficient
     std::vector<Point2D> originalPath;
     int numEpicycles;
     double time;
