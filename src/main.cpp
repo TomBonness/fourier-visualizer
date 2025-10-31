@@ -145,21 +145,22 @@ int main() {
             trail.erase(trail.begin());
         }
 
-        // Clear with black background
-        window.clear(sf::Color::Black);
+        // Clear with deep black background (vaporwave aesthetic)
+        window.clear(sf::Color(10, 10, 10));  // #0a0a0a
 
-        // Draw trail with fade effect
+        // Draw trail with fade effect (vaporwave cyan)
         if (trail.size() > 1) {
             for (size_t i = 1; i < trail.size(); i++) {
                 // Linear fade - older points are more transparent
                 float fade = static_cast<float>(i) / trail.size();
                 int alpha = static_cast<int>(fade * 255);
 
+                // Vaporwave cyan color for trail
                 sf::Vertex line[2];
                 line[0].position = trail[i - 1].toSFML();
-                line[0].color = sf::Color(255, 255, 255, alpha);
+                line[0].color = sf::Color(0, 240, 255, alpha);  // Cyan
                 line[1].position = trail[i].toSFML();
-                line[1].color = sf::Color(255, 255, 255, alpha);
+                line[1].color = sf::Color(0, 240, 255, alpha);  // Cyan
                 window.draw(line, 2, sf::PrimitiveType::Lines);
             }
         }
