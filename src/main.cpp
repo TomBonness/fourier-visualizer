@@ -297,10 +297,15 @@ int main() {
         }
 
         // Draw UI
+        // Top panel for controls
+        uiManager.drawPanel(window, 5, 5, 350, 50);
         std::string speedText = "Speed: " + std::to_string(speed).substr(0, 3) + "x  (+/- to adjust)";
         uiManager.drawText(window, speedText, 10, 10);
         std::string epicycleText = "Epicycles: " + std::to_string(numEpicyclesToShow) + "  ([/] to adjust)";
         uiManager.drawText(window, epicycleText, 10, 30);
+
+        // Bottom panel for help text
+        uiManager.drawPanel(window, 5, 682, 950, 30);
         uiManager.drawText(window, "Press 1-4: Shapes  |  Draw: Click & Drag  |  C: Clear  |  R: Reset  |  Space: Pause", 10, 690);
 
         // Display
