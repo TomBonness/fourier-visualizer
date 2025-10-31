@@ -6,6 +6,7 @@
 #include "FourierEngine.h"
 #include "PathData.h"
 #include "Renderer.h"
+#include "InputHandler.h"
 
 // Helper function for color interpolation
 sf::Color lerpColor(sf::Color a, sf::Color b, float t) {
@@ -29,9 +30,10 @@ int main() {
     float time = 0.f;
     Point2D screenCenter(640.f, 360.f);
 
-    // Create Fourier Engine and Renderer
+    // Create Fourier Engine, Renderer, and Input Handler
     FourierEngine fourierEngine;
     Renderer renderer;
+    InputHandler inputHandler;
 
     // Start with circle
     std::vector<Point2D> path = PathData::createCircle(100, 120.f);
@@ -55,6 +57,9 @@ int main() {
             if (event->is<sf::Event::Closed>()) {
                 window.close();
             }
+
+            // Handle input (mouse drawing)
+            inputHandler.handleEvent(*event, window);
 
             // Handle keyboard input
             if (const auto* keyPressed = event->getIf<sf::Event::KeyPressed>()) {
