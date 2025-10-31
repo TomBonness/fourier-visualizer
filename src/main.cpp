@@ -198,8 +198,8 @@ int main() {
         // Draw trail
         renderer.drawTrail(window, trail);
 
-        // Draw user's drawn path if they're drawing
-        if (inputHandler.isDrawing() && inputHandler.getDrawnPath().size() > 0) {
+        // Draw user's drawn path if it exists
+        if (inputHandler.getDrawnPath().size() > 0) {
             renderer.drawUserPath(window, inputHandler.getDrawnPath());
         }
 
