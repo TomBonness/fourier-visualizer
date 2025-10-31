@@ -16,6 +16,7 @@ set(SOURCES
     src/main.cpp
     src/FourierEngine.cpp
     src/PathData.cpp
+    src/Renderer.cpp
 )
 
 # Create executable
