@@ -206,6 +206,30 @@ int main() {
             window.draw(dot);
         }
 
+        // Draw glow at the drawing point (final position)
+        if (!epicycles.empty()) {
+            Point2D drawPoint = currentPos;
+
+            // Multi-layer glow effect
+            for (int i = 5; i >= 1; i--) {
+                float radius = i * 3.0f;
+                int alpha = 50 / i;  // Fade outward
+
+                sf::CircleShape glow(radius);
+                glow.setOrigin({radius, radius});
+                glow.setPosition(drawPoint.toSFML());
+                glow.setFillColor(sf::Color(0, 240, 255, alpha));  // Cyan glow
+                window.draw(glow, sf::BlendAdd);  // Additive blending for glow
+            }
+
+            // Bright center point
+            sf::CircleShape centerPoint(2.f);
+            centerPoint.setOrigin({2.f, 2.f});
+            centerPoint.setPosition(drawPoint.toSFML());
+            centerPoint.setFillColor(sf::Color(255, 255, 255));
+            window.draw(centerPoint, sf::BlendAdd);
+        }
+
         // Display
         window.display();
     }
