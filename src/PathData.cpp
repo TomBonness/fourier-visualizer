@@ -32,8 +32,26 @@ std::vector<Point2D> PathData::createHeart(int numPoints, float scale) {
 }
 
 std::vector<Point2D> PathData::createStar(int numPoints, int spikes, float scale) {
-    // TODO: Implement star shape
-    return createCircle(numPoints, scale);
+    std::vector<Point2D> points;
+
+    float outerRadius = scale;
+    float innerRadius = scale * 0.4f;  // Inner points are 40% of outer radius
+
+    for (int i = 0; i < numPoints; i++) {
+        float angle = (2.0f * M_PI * i) / numPoints;
+
+        // Alternate between outer and inner radius based on spike position
+        int spikeIndex = (i * spikes * 2) / numPoints;
+        bool isOuterPoint = (spikeIndex % 2 == 0);
+
+        float radius = isOuterPoint ? outerRadius : innerRadius;
+        float x = radius * std::cos(angle - M_PI / 2);  // Start from top
+        float y = radius * std::sin(angle - M_PI / 2);
+
+        points.push_back(Point2D(x, y));
+    }
+
+    return points;
 }
 
 std::vector<Point2D> PathData::createSquare(int numPoints, float size) {
