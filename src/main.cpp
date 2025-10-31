@@ -50,13 +50,14 @@ int main() {
     float time = 0.f;
     Point2D screenCenter(640.f, 360.f);
 
-    // Create Fourier Engine and compute DFT for a shape
+    // Create Fourier Engine
     FourierEngine fourierEngine;
-    // Test with a star
-    std::vector<Point2D> path = PathData::createStar(200, 5, 120.f);
+
+    // Start with circle
+    std::vector<Point2D> path = PathData::createCircle(100, 120.f);
     fourierEngine.computeDFT(path);
 
-    std::cout << "DFT computed for star!" << std::endl;
+    std::cout << "DFT computed! Press 1-4 to switch shapes" << std::endl;
 
     // Trail for the path
     std::vector<Point2D> trail;
@@ -73,6 +74,42 @@ int main() {
         while (const std::optional event = window.pollEvent()) {
             if (event->is<sf::Event::Closed>()) {
                 window.close();
+            }
+
+            // Handle keyboard input
+            if (const auto* keyPressed = event->getIf<sf::Event::KeyPressed>()) {
+                bool shapeChanged = false;
+
+                if (keyPressed->code == sf::Keyboard::Key::Num1) {
+                    // Circle
+                    path = PathData::createCircle(100, 120.f);
+                    shapeChanged = true;
+                    std::cout << "Shape: Circle" << std::endl;
+                }
+                else if (keyPressed->code == sf::Keyboard::Key::Num2) {
+                    // Square
+                    path = PathData::createSquare(200, 250.f);
+                    shapeChanged = true;
+                    std::cout << "Shape: Square" << std::endl;
+                }
+                else if (keyPressed->code == sf::Keyboard::Key::Num3) {
+                    // Star
+                    path = PathData::createStar(200, 5, 120.f);
+                    shapeChanged = true;
+                    std::cout << "Shape: Star" << std::endl;
+                }
+                else if (keyPressed->code == sf::Keyboard::Key::Num4) {
+                    // Heart
+                    path = PathData::createHeart(200, 10.f);
+                    shapeChanged = true;
+                    std::cout << "Shape: Heart" << std::endl;
+                }
+
+                if (shapeChanged) {
+                    fourierEngine.computeDFT(path);
+                    trail.clear();
+                    time = 0.f;
+                }
             }
         }
 
