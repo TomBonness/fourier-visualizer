@@ -98,9 +98,13 @@ int main() {
                     std::cout << "Shape: Heart" << std::endl;
                 }
                 else if (keyPressed->code == sf::Keyboard::Key::C) {
-                    // Clear drawing
+                    // Clear drawing and reset to circle
                     inputHandler.clearPath();
-                    std::cout << "Cleared drawing" << std::endl;
+                    path = PathData::createCircle(100, 120.f);
+                    fourierEngine.computeDFT(path);
+                    trail.clear();
+                    time = 0.f;
+                    std::cout << "Cleared - back to circle" << std::endl;
                 }
                 else if (keyPressed->code == sf::Keyboard::Key::R) {
                     // Reset animation
@@ -198,8 +202,8 @@ int main() {
         // Draw trail
         renderer.drawTrail(window, trail);
 
-        // Draw user's drawn path if it exists
-        if (inputHandler.getDrawnPath().size() > 0) {
+        // Draw user's drawn path if they're drawing
+        if (inputHandler.isDrawing() && inputHandler.getDrawnPath().size() > 0) {
             renderer.drawUserPath(window, inputHandler.getDrawnPath());
         }
 
