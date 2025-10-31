@@ -18,6 +18,7 @@ set(SOURCES
     src/PathData.cpp
     src/Renderer.cpp
     src/InputHandler.cpp
+    src/UIManager.cpp
 )
 
 # Create executable

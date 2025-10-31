@@ -7,6 +7,7 @@
 #include "PathData.h"
 #include "Renderer.h"
 #include "InputHandler.h"
+#include "UIManager.h"
 
 // Helper function for color interpolation
 sf::Color lerpColor(sf::Color a, sf::Color b, float t) {
@@ -30,10 +31,16 @@ int main() {
     float time = 0.f;
     Point2D screenCenter(640.f, 360.f);
 
-    // Create Fourier Engine, Renderer, and Input Handler
+    // Create Fourier Engine, Renderer, Input Handler, and UI Manager
     FourierEngine fourierEngine;
     Renderer renderer;
     InputHandler inputHandler;
+    UIManager uiManager;
+
+    // Try to load a system font (macOS)
+    if (!uiManager.loadFont("/System/Library/Fonts/Supplemental/Arial.ttf")) {
+        std::cout << "Warning: UI text will not be displayed" << std::endl;
+    }
 
     // Start with circle
     std::vector<Point2D> path = PathData::createCircle(100, 120.f);
@@ -240,6 +247,9 @@ int main() {
         if (!epicycles.empty()) {
             renderer.drawGlow(window, currentPos);
         }
+
+        // Draw UI
+        uiManager.drawText(window, "Press 1-4: Shapes  |  Draw: Click & Drag  |  C: Clear  |  R: Reset  |  Space: Pause", 10, 690);
 
         // Display
         window.display();
