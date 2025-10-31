@@ -57,6 +57,7 @@ int main() {
 
     // Animation state
     bool paused = false;
+    float speed = 0.3f;  // Animation speed multiplier
 
     // Main loop
     while (window.isOpen()) {
@@ -64,7 +65,7 @@ int main() {
         float deltaTime = clock.restart().asSeconds();
         if (deltaTime > 0.033f) deltaTime = 0.033f;  // cap at ~30 FPS worth
         if (!paused) {
-            time += deltaTime * 0.3f;  // Slow down animation to 30% speed
+            time += deltaTime * speed;
         }
 
         // Handle events
@@ -123,6 +124,17 @@ int main() {
                     // Toggle pause
                     paused = !paused;
                     std::cout << (paused ? "Paused" : "Playing") << std::endl;
+                }
+                else if (keyPressed->code == sf::Keyboard::Key::Equal || keyPressed->code == sf::Keyboard::Key::Hyphen) {
+                    // Adjust speed with +/- keys
+                    if (keyPressed->code == sf::Keyboard::Key::Equal) {
+                        speed += 0.1f;
+                        if (speed > 2.0f) speed = 2.0f;  // Max speed
+                    } else {
+                        speed -= 0.1f;
+                        if (speed < 0.1f) speed = 0.1f;  // Min speed
+                    }
+                    std::cout << "Speed: " << speed << "x" << std::endl;
                 }
 
                 if (shapeChanged) {
@@ -249,6 +261,8 @@ int main() {
         }
 
         // Draw UI
+        std::string speedText = "Speed: " + std::to_string(speed).substr(0, 3) + "x  (+/- to adjust)";
+        uiManager.drawText(window, speedText, 10, 10);
         uiManager.drawText(window, "Press 1-4: Shapes  |  Draw: Click & Drag  |  C: Clear  |  R: Reset  |  Space: Pause", 10, 690);
 
         // Display
