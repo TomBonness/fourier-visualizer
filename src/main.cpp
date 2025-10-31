@@ -148,19 +148,37 @@ int main() {
         // Clear with deep black background (vaporwave aesthetic)
         window.clear(sf::Color(10, 10, 10));  // #0a0a0a
 
-        // Draw trail with fade effect (vaporwave cyan)
+        // Draw trail with gradient and smooth fade effect
         if (trail.size() > 1) {
             for (size_t i = 1; i < trail.size(); i++) {
-                // Linear fade - older points are more transparent
-                float fade = static_cast<float>(i) / trail.size();
+                // Quadratic fade for smoother effect
+                float t = static_cast<float>(i) / trail.size();
+                float fade = t * t;  // Quadratic easing
                 int alpha = static_cast<int>(fade * 255);
 
-                // Vaporwave cyan color for trail
+                // Color gradient along trail: Pink -> Cyan -> Purple
+                sf::Color color;
+                if (t < 0.5f) {
+                    // Pink to Cyan
+                    color = lerpColor(
+                        sf::Color(255, 110, 199),  // Neon Pink
+                        sf::Color(0, 240, 255),    // Cyan
+                        t * 2.0f
+                    );
+                } else {
+                    // Cyan to Purple
+                    color = lerpColor(
+                        sf::Color(0, 240, 255),    // Cyan
+                        sf::Color(185, 103, 255),  // Purple
+                        (t - 0.5f) * 2.0f
+                    );
+                }
+
                 sf::Vertex line[2];
                 line[0].position = trail[i - 1].toSFML();
-                line[0].color = sf::Color(0, 240, 255, alpha);  // Cyan
+                line[0].color = sf::Color(color.r, color.g, color.b, alpha);
                 line[1].position = trail[i].toSFML();
-                line[1].color = sf::Color(0, 240, 255, alpha);  // Cyan
+                line[1].color = sf::Color(color.r, color.g, color.b, alpha);
                 window.draw(line, 2, sf::PrimitiveType::Lines);
             }
         }
