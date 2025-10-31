@@ -97,11 +97,73 @@ std::vector<Point2D> PathData::createSquare(int numPoints, float size) {
 }
 
 std::vector<Point2D> PathData::resamplePath(const std::vector<Point2D>& path, int targetPoints) {
-    // TODO: Implement resampling
-    return path;
+    if (path.size() < 2) return path;
+
+    // Calculate total path length
+    float totalLength = 0.0f;
+    for (size_t i = 1; i < path.size(); i++) {
+        float dx = path[i].x - path[i-1].x;
+        float dy = path[i].y - path[i-1].y;
+        totalLength += std::sqrt(dx * dx + dy * dy);
+    }
+
+    // Resample at even intervals
+    std::vector<Point2D> resampled;
+    float targetDistance = totalLength / (targetPoints - 1);
+
+    resampled.push_back(path[0]);
+
+    float accumulatedDist = 0.0f;
+    size_t currentIdx = 0;
+
+    for (int i = 1; i < targetPoints - 1; i++) {
+        float targetDist = i * targetDistance;
+
+        // Find the segment containing this target distance
+        while (currentIdx < path.size() - 1) {
+            float dx = path[currentIdx + 1].x - path[currentIdx].x;
+            float dy = path[currentIdx + 1].y - path[currentIdx].y;
+            float segmentLength = std::sqrt(dx * dx + dy * dy);
+
+            if (accumulatedDist + segmentLength >= targetDist) {
+                // Interpolate within this segment
+                float t = (targetDist - accumulatedDist) / segmentLength;
+                Point2D interpolated(
+                    path[currentIdx].x + t * dx,
+                    path[currentIdx].y + t * dy
+                );
+                resampled.push_back(interpolated);
+                break;
+            }
+
+            accumulatedDist += segmentLength;
+            currentIdx++;
+        }
+    }
+
+    resampled.push_back(path[path.size() - 1]);
+    return resampled;
 }
 
 std::vector<Point2D> PathData::centerPath(const std::vector<Point2D>& path, Point2D center) {
-    // TODO: Implement centering
-    return path;
+    if (path.empty()) return path;
+
+    // Find current center (centroid)
+    float sumX = 0.0f, sumY = 0.0f;
+    for (const auto& p : path) {
+        sumX += p.x;
+        sumY += p.y;
+    }
+    Point2D currentCenter(sumX / path.size(), sumY / path.size());
+
+    // Translate to new center
+    std::vector<Point2D> centered;
+    float dx = center.x - currentCenter.x;
+    float dy = center.y - currentCenter.y;
+
+    for (const auto& p : path) {
+        centered.push_back(Point2D(p.x + dx, p.y + dy));
+    }
+
+    return centered;
 }

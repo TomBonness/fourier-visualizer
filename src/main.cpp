@@ -45,6 +45,9 @@ int main() {
     std::vector<Point2D> trail;
     const int maxTrailLength = 300;
 
+    // Track drawing state
+    bool wasDrawing = false;
+
     // Main loop
     while (window.isOpen()) {
         // Delta time with cap to prevent huge jumps
@@ -97,6 +100,24 @@ int main() {
                 }
             }
         }
+
+        // Check if user just finished drawing
+        if (wasDrawing && !inputHandler.isDrawing()) {
+            const auto& drawnPath = inputHandler.getDrawnPath();
+            if (drawnPath.size() > 10) {  // Only if they drew enough points
+                // Resample and center the path around origin
+                path = PathData::resamplePath(drawnPath, 200);
+                path = PathData::centerPath(path, Point2D(0.f, 0.f));
+
+                // Compute Fourier transform
+                fourierEngine.computeDFT(path);
+                trail.clear();
+                time = 0.f;
+
+                std::cout << "Computed DFT from drawn shape!" << std::endl;
+            }
+        }
+        wasDrawing = inputHandler.isDrawing();
 
         // Get epicycles from Fourier Engine
         std::vector<Epicycle> epicycles = fourierEngine.getEpicycles(time);
