@@ -58,6 +58,7 @@ int main() {
     // Animation state
     bool paused = false;
     float speed = 0.3f;  // Animation speed multiplier
+    int numEpicyclesToShow = 100;  // Number of epicycles to display
 
     // Main loop
     while (window.isOpen()) {
@@ -136,6 +137,17 @@ int main() {
                     }
                     std::cout << "Speed: " << speed << "x" << std::endl;
                 }
+                else if (keyPressed->code == sf::Keyboard::Key::RBracket || keyPressed->code == sf::Keyboard::Key::LBracket) {
+                    // Adjust epicycle count with [ and ] keys
+                    if (keyPressed->code == sf::Keyboard::Key::RBracket) {
+                        numEpicyclesToShow += 10;
+                        if (numEpicyclesToShow > 200) numEpicyclesToShow = 200;  // Max epicycles
+                    } else {
+                        numEpicyclesToShow -= 10;
+                        if (numEpicyclesToShow < 1) numEpicyclesToShow = 1;  // Min epicycles
+                    }
+                    std::cout << "Epicycles: " << numEpicyclesToShow << std::endl;
+                }
 
                 if (shapeChanged) {
                     fourierEngine.computeDFT(path);
@@ -165,6 +177,11 @@ int main() {
 
         // Get epicycles from Fourier Engine
         std::vector<Epicycle> epicycles = fourierEngine.getEpicycles(time);
+
+        // Limit to the number user wants to see
+        if (epicycles.size() > static_cast<size_t>(numEpicyclesToShow)) {
+            epicycles.resize(numEpicyclesToShow);
+        }
 
         // Assign colors to epicycles - spread across visible ones
         for (size_t i = 0; i < epicycles.size(); i++) {
@@ -263,6 +280,8 @@ int main() {
         // Draw UI
         std::string speedText = "Speed: " + std::to_string(speed).substr(0, 3) + "x  (+/- to adjust)";
         uiManager.drawText(window, speedText, 10, 10);
+        std::string epicycleText = "Epicycles: " + std::to_string(numEpicyclesToShow) + "  ([/] to adjust)";
+        uiManager.drawText(window, epicycleText, 10, 30);
         uiManager.drawText(window, "Press 1-4: Shapes  |  Draw: Click & Drag  |  C: Clear  |  R: Reset  |  Space: Pause", 10, 690);
 
         // Display
