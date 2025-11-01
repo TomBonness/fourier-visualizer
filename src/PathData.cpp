@@ -25,7 +25,7 @@ std::vector<Point2D> PathData::createHeart(int numPoints, float scale) {
         float y = 13.0f * std::cos(t) - 5.0f * std::cos(2.0f * t)
                   - 2.0f * std::cos(3.0f * t) - std::cos(4.0f * t);
 
-        points.push_back(Point2D(x * scale, y * scale));  // y positive is down in SFML
+        points.push_back(Point2D(x * scale, -y * scale));  // Flip y to make heart right-side up
     }
 
     return points;
@@ -37,16 +37,27 @@ std::vector<Point2D> PathData::createStar(int numPoints, int spikes, float scale
     float outerRadius = scale;
     float innerRadius = scale * 0.4f;  // Inner points are 40% of outer radius
 
+    // Distribute points around the star shape
     for (int i = 0; i < numPoints; i++) {
-        float angle = (2.0f * M_PI * i) / numPoints;
+        float t = static_cast<float>(i) / numPoints;
+        float angle = t * 2.0f * M_PI - M_PI / 2;  // Start from top
 
-        // Alternate between outer and inner radius based on spike position
-        int spikeIndex = (i * spikes * 2) / numPoints;
-        bool isOuterPoint = (spikeIndex % 2 == 0);
+        // Figure out which spike we're on
+        float spikePosition = t * spikes;
+        float withinSpike = spikePosition - std::floor(spikePosition);
 
-        float radius = isOuterPoint ? outerRadius : innerRadius;
-        float x = radius * std::cos(angle - M_PI / 2);  // Start from top
-        float y = radius * std::sin(angle - M_PI / 2);
+        // Interpolate radius smoothly between outer and inner points
+        // 0 = outer point, 0.5 = inner point, 1.0 = next outer point
+        float radiusFactor;
+        if (withinSpike < 0.5f) {
+            radiusFactor = 1.0f - withinSpike * 2.0f;  // Go from outer to inner
+        } else {
+            radiusFactor = (withinSpike - 0.5f) * 2.0f;  // Go from inner to outer
+        }
+
+        float radius = innerRadius + (outerRadius - innerRadius) * radiusFactor;
+        float x = radius * std::cos(angle);
+        float y = radius * std::sin(angle);
 
         points.push_back(Point2D(x, y));
     }
