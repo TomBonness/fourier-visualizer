@@ -297,16 +297,25 @@ int main() {
         }
 
         // Draw UI
-        // Top panel for controls
-        uiManager.drawPanel(window, 5, 5, 350, 50);
-        std::string speedText = "Speed: " + std::to_string(speed).substr(0, 3) + "x  (+/- to adjust)";
-        uiManager.drawText(window, speedText, 10, 10);
-        std::string epicycleText = "Epicycles: " + std::to_string(numEpicyclesToShow) + "  ([/] to adjust)";
-        uiManager.drawText(window, epicycleText, 10, 30);
+        // Top-left panel for animation controls
+        uiManager.drawPanel(window, 5, 5, 240, 75);
+        uiManager.drawText(window, "ANIMATION", 15, 10, 12);
+        std::string speedText = "Speed: " + std::to_string(speed).substr(0, 3) + "x";
+        uiManager.drawText(window, speedText, 15, 30);
+        std::string pauseText = paused ? "[PAUSED]" : "[Playing]";
+        uiManager.drawText(window, pauseText, 15, 50);
+
+        // Top-middle panel for rendering controls
+        uiManager.drawPanel(window, 250, 5, 280, 75);
+        uiManager.drawText(window, "RENDERING", 260, 10, 12);
+        std::string epicycleText = "Epicycles: " + std::to_string(numEpicyclesToShow) + (showEpicycles ? "" : " [Hidden]");
+        uiManager.drawText(window, epicycleText, 260, 30);
+        std::string trailText = "Trail: " + std::string(showTrail ? "Visible" : "Hidden");
+        uiManager.drawText(window, trailText, 260, 50);
 
         // Bottom panel for help text
-        uiManager.drawPanel(window, 5, 682, 950, 30);
-        uiManager.drawText(window, "Press 1-4: Shapes  |  Draw: Click & Drag  |  C: Clear  |  R: Reset  |  Space: Pause", 10, 690);
+        uiManager.drawPanel(window, 5, 682, 1150, 30);
+        uiManager.drawText(window, "1-4: Shapes  |  Draw: Click & Drag  |  +/- Speed  |  [/] Epicycles  |  E: Toggle Epicycles  |  T: Toggle Trail  |  Space: Pause  |  C: Clear  |  R: Reset", 10, 690);
 
         // Display
         window.display();
