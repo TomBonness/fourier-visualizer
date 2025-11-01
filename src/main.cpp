@@ -46,7 +46,7 @@ int main() {
     std::vector<Point2D> path = PathData::createCircle(100, 120.f);
     fourierEngine.computeDFT(path);
 
-    std::cout << "DFT computed! Press 1-4 to switch shapes" << std::endl;
+    std::cout << "DFT computed! Press 1-5 to switch shapes" << std::endl;
 
     // Trail for the path
     std::vector<Point2D> trail;
@@ -63,6 +63,9 @@ int main() {
     // Visibility toggles
     bool showEpicycles = true;
     bool showTrail = true;
+
+    // Current shape name
+    std::string currentShapeName = "Circle";
 
     // Main loop
     while (window.isOpen()) {
@@ -89,30 +92,35 @@ int main() {
                 if (keyPressed->code == sf::Keyboard::Key::Num1) {
                     // Circle
                     path = PathData::createCircle(100, 120.f);
+                    currentShapeName = "Circle";
                     shapeChanged = true;
                     std::cout << "Shape: Circle" << std::endl;
                 }
                 else if (keyPressed->code == sf::Keyboard::Key::Num2) {
                     // Square
                     path = PathData::createSquare(200, 250.f);
+                    currentShapeName = "Square";
                     shapeChanged = true;
                     std::cout << "Shape: Square" << std::endl;
                 }
                 else if (keyPressed->code == sf::Keyboard::Key::Num3) {
                     // Star
                     path = PathData::createStar(200, 5, 120.f);
+                    currentShapeName = "Star";
                     shapeChanged = true;
                     std::cout << "Shape: Star" << std::endl;
                 }
                 else if (keyPressed->code == sf::Keyboard::Key::Num4) {
                     // Heart
                     path = PathData::createHeart(200, 10.f);
+                    currentShapeName = "Heart";
                     shapeChanged = true;
                     std::cout << "Shape: Heart" << std::endl;
                 }
                 else if (keyPressed->code == sf::Keyboard::Key::Num5) {
                     // Infinity
                     path = PathData::createInfinity(200, 120.f);
+                    currentShapeName = "Infinity";
                     shapeChanged = true;
                     std::cout << "Shape: Infinity" << std::endl;
                 }
@@ -120,6 +128,7 @@ int main() {
                     // Clear drawing and reset to circle
                     inputHandler.clearPath();
                     path = PathData::createCircle(100, 120.f);
+                    currentShapeName = "Circle";
                     fourierEngine.computeDFT(path);
                     trail.clear();
                     time = 0.f;
@@ -187,6 +196,7 @@ int main() {
 
                 // Compute Fourier transform
                 fourierEngine.computeDFT(path);
+                currentShapeName = "Custom";
                 trail.clear();
                 time = 0.f;
 
@@ -318,6 +328,11 @@ int main() {
         uiManager.drawText(window, epicycleText, 260, 30);
         std::string trailText = "Trail: " + std::string(showTrail ? "Visible" : "Hidden");
         uiManager.drawText(window, trailText, 260, 50);
+
+        // Top-right panel for shape info
+        uiManager.drawPanel(window, 535, 5, 200, 75);
+        uiManager.drawText(window, "SHAPE", 545, 10, 12);
+        uiManager.drawText(window, currentShapeName, 545, 30);
 
         // Bottom panel for help text
         uiManager.drawPanel(window, 5, 682, 1270, 30);
