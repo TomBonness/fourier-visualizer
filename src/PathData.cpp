@@ -99,12 +99,13 @@ std::vector<Point2D> PathData::createSquare(int numPoints, float size) {
 std::vector<Point2D> PathData::createInfinity(int numPoints, float scale) {
     std::vector<Point2D> points;
 
-    // For now, just make it an ellipse until we fix the rendering tilt issue
+    // Lemniscate of Gerono (infinity symbol / figure-8)
+    // Parametric equations: x = cos(t), y = sin(t) * cos(t)
     for (int i = 0; i < numPoints; i++) {
         float t = (2.0f * M_PI * i) / numPoints;
 
         float x = scale * std::cos(t);
-        float y = scale * 0.5f * std::sin(t);
+        float y = scale * std::sin(t) * std::cos(t);
 
         points.push_back(Point2D(x, y));
     }

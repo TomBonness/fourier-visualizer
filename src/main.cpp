@@ -231,8 +231,8 @@ int main() {
         // Position epicycles relative to screen center and chain them together
         Point2D currentPos = screenCenter;
         for (size_t i = 0; i < epicycles.size(); i++) {
-            // Calculate rotation angle for this epicycle
-            float angle = 2.0f * M_PI * epicycles[i].frequency * time;
+            // Calculate rotation angle for this epicycle: angle = frequency * 2π * time + phase
+            float angle = 2.0f * M_PI * epicycles[i].frequency * time + epicycles[i].phase;
             Point2D offset(
                 epicycles[i].radius * std::cos(angle),
                 epicycles[i].radius * std::sin(angle)
@@ -270,8 +270,8 @@ int main() {
             // Draw connecting lines between epicycles
             Point2D lineStart = screenCenter;
             for (size_t i = 0; i < epicycles.size(); i++) {
-                // Use same angle calculation as epicycle positioning
-                float angle = 2.0f * M_PI * epicycles[i].frequency * time;
+                // Use same angle calculation as epicycle positioning: angle = frequency * 2π * time + phase
+                float angle = 2.0f * M_PI * epicycles[i].frequency * time + epicycles[i].phase;
                 Point2D offset(
                     epicycles[i].radius * std::cos(angle),
                     epicycles[i].radius * std::sin(angle)
