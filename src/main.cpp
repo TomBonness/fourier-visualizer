@@ -58,7 +58,7 @@ int main() {
     // Animation state
     bool paused = false;
     float speed = 0.3f;  // Animation speed multiplier
-    int numEpicyclesToShow = 100;  // Number of epicycles to display
+    int numEpicyclesToShow = 50;  // Number of epicycles to display
 
     // Visibility toggles
     bool showEpicycles = true;
@@ -159,10 +159,10 @@ int main() {
                 else if (keyPressed->code == sf::Keyboard::Key::RBracket || keyPressed->code == sf::Keyboard::Key::LBracket) {
                     // Adjust epicycle count with [ and ] keys
                     if (keyPressed->code == sf::Keyboard::Key::RBracket) {
-                        numEpicyclesToShow += 10;
+                        numEpicyclesToShow += 1;
                         if (numEpicyclesToShow > 200) numEpicyclesToShow = 200;  // Max epicycles
                     } else {
-                        numEpicyclesToShow -= 10;
+                        numEpicyclesToShow -= 1;
                         if (numEpicyclesToShow < 1) numEpicyclesToShow = 1;  // Min epicycles
                     }
                     std::cout << "Epicycles: " << numEpicyclesToShow << std::endl;
